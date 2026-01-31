@@ -3,19 +3,12 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_info/models/index.dart';
-import 'package:mobile_info/models/deposito_model.dart';
 import 'package:mobile_info/models/tabungan_model.dart';
-import 'package:mobile_info/models/kredit_model.dart';
 import 'package:mobile_info/module/auth/lock_screen_page.dart';
 import 'package:mobile_info/module/repository/auth_repository.dart';
 import 'package:mobile_info/module/repository/home_repository.dart';
 import 'package:mobile_info/module/repository/rekening_repository.dart';
-import 'package:mobile_info/module/repository/rekening_inquiry_repository.dart';
-import 'package:mobile_info/module/transfer/transfer_in_page.dart';
-import 'package:mobile_info/module/transfer/transfer_page.dart';
-import 'package:mobile_info/module/transfer/transfer_sesama_page.dart';
 import 'package:mobile_info/pref/pref.dart';
-import 'package:mobile_info/utils/colors.dart';
 import 'package:mobile_info/utils/images_path.dart';
 
 import '../../network/network.dart';
@@ -38,8 +31,6 @@ class HomeNotifier extends ChangeNotifier {
     /// 2. sekarang BARU aman
     getHome();
     loadTabungan();
-    loadDeposito();
-    loadKredit();
     initializeTimer();
     getRateProduk();
 
@@ -134,59 +125,6 @@ class HomeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<DepositoModel> listDeposito = [];
-  bool loadingDeposito = false;
-
-  Future loadDeposito() async {
-    loadingDeposito = true;
-    notifyListeners();
-
-    try {
-      listDeposito = await RekeningRepository.getDeposito(
-        token: token,
-        endpoint: NetworkURL.inquiryMasterData(),
-        userlogin: "admin",
-        // bprId: users!.bprId,
-        bprId: users!.bprId,
-        nocif: users!.noCif,
-      );
-    } catch (e) {
-      debugPrint("ERROR DEPOSITO: $e");
-    }
-
-    loadingDeposito = false;
-    notifyListeners();
-  }
-
-  List<KreditModel> listKredit = [];
-  bool loadingKredit = false;
-
-  Future loadKredit() async {
-    loadingKredit = true;
-    notifyListeners();
-
-    try {
-      listKredit = await RekeningRepository.getKredit(
-        token: token,
-        endpoint: NetworkURL.inquiryMasterData(),
-        userlogin: "admin",
-        // bprId: users!.bprId,
-        bprId: users!.bprId,
-        nocif: users!.noCif,
-      );
-    } catch (e) {
-      debugPrint("ERROR KREDIT: $e");
-    }
-
-    loadingKredit = false;
-    notifyListeners();
-  }
-
-  gantiPage(int value) {
-    page = value;
-    notifyListeners();
-  }
-
   var isLoading = true;
   List<BannersModel> list = [];
   List<BannersModel> listBanner = [];
@@ -244,106 +182,4 @@ class HomeNotifier extends ChangeNotifier {
   var isLoadingSaldo = false;
   var hideSaldo = true;
   int saldo = 0;
-
-  transferModul() {
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-      ),
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text("Pilih Metode Transfer", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  ),
-                  InkWell(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.grey[300]),
-                      child: Icon(Icons.close),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => TransferInPage()));
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: colorPrimary),
-                      child: Image.asset(ImageAssets.download, height: 40, color: Colors.white),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(child: Text("Transfer Ke Rekening Sendiri")),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 4),
-                child: Divider(color: Colors.grey),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => TransferSesamaPage()));
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: colorPrimary),
-                      child: Image.asset(ImageAssets.trasnferIcon, height: 40, color: Colors.white),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(child: Text("Pindah Buku")),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 4),
-                child: Divider(color: Colors.grey),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const TransferPage()));
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: colorPrimary),
-                      child: Image.asset(ImageAssets.upload, height: 40, color: Colors.white),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(child: Text("Transfer Ke Bank Lain")),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }

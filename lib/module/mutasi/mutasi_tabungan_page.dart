@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_info/utils/colors.dart';
 import 'package:mobile_info/utils/format_currency.dart';
-import 'package:mobile_info/module/video_call/video_call_screen.dart';
-import 'package:mobile_info/module/chat/chat_page.dart';
 import 'package:mobile_info/module/mutasi/mutasi_pdf_generator.dart';
 import '../../models/mutasi_tabungan_model.dart';
 import 'mutasi_tabungan_notifier.dart';
@@ -161,22 +159,6 @@ class _MutasiBodyState extends State<_MutasiBody> with SingleTickerProviderState
                   ),
                 ),
               ),
-
-              const SizedBox(width: 8),
-
-              /// ===== BANTUAN CS =====
-              InkWell(
-                onTap: _showBantuanCS,
-                borderRadius: BorderRadius.circular(24),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
-                  child: const Text(
-                    "Bantuan CS",
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -197,93 +179,6 @@ class _MutasiBodyState extends State<_MutasiBody> with SingleTickerProviderState
     }
 
     await MutasiPdfGenerator.generate(context: context, noRek: widget.noRekening, namaProduk: widget.namaProduk, data: notifier.data);
-  }
-
-  void _showBantuanCS() {
-    showModalBottomSheet(
-      context: context,
-      useRootNavigator: false,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        final screenWidth = MediaQuery.of(ctx).size.width;
-        final contentWidth = screenWidth > 600 ? 400.0 : screenWidth;
-
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.pop(ctx), // ✅ tap luar = close
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: GestureDetector(
-                  onTap: () {}, // ❗ cegah tap tembus
-                  child: Container(
-                    width: contentWidth,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                    child: SafeArea(
-                      top: false,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 4,
-                            margin: const EdgeInsets.only(bottom: 16),
-                            decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
-                          ),
-
-                          const Text("Bantuan Customer Service", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-
-                          const SizedBox(height: 16),
-
-                          /// ===== VIDEO CALL =====
-                          ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: colorPrimary.withOpacity(0.15),
-                              child: const Icon(Icons.support_agent, color: colorPrimary),
-                            ),
-                            title: const Text("Video Call"),
-                            subtitle: const Text("Hubungi CS melalui video"),
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => VideoPage(channelName: widget.noRekening, invoice: ""),
-                                ),
-                              );
-                            },
-                          ),
-
-                          /// ===== CHAT =====
-                          ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.green.withOpacity(0.15),
-                              child: const Icon(Icons.chat, color: Colors.green),
-                            ),
-                            title: const Text("Chat"),
-                            subtitle: const Text("Chat dengan Customer Service"),
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatPage()));
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Widget _listMutasi() {
